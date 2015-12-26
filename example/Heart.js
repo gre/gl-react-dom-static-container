@@ -7,7 +7,9 @@ const shaders = GL.Shaders.create({
     frag: `
 precision highp float;
 varying vec2 uv;
+
 uniform vec3 color;
+uniform float over;
 
 void main(void)
 {
@@ -19,7 +21,7 @@ void main(void)
   float r = length(p);
 
   float h = abs(a);
-  float d = (13.0*h - 22.0*h*h + 10.0*h*h*h)/(6.0-5.0*h);
+  float d = (13.0*h - 22.0*h*h + 10.0*h*h*h - 0.4 * over)/(6.0-5.0*h);
 
   float f = step(r,d) * pow(1.0-r/d,0.25);
   gl_FragColor = vec4(mix(vec3(1.0), color, f), 1.0);
@@ -29,10 +31,11 @@ void main(void)
 });
 
 module.exports = GL.createComponent(
-  ({ color }) => <GL.Node shader={shaders.Heart} uniforms={{ color }} />,
+  ({ color, over }) => <GL.Node shader={shaders.Heart} uniforms={{ color, over }} />,
   {
     displayName: "Heart",
     propTypes: {
-      color: PropTypes.array.isRequired
+      color: PropTypes.array.isRequired,
+      over: PropTypes.number.isRequired
     }
   });
