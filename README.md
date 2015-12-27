@@ -2,7 +2,6 @@
 
 **`<StaticContainer>`** for [gl-react-dom](https://github.com/ProjectSeptemberInc/gl-react-dom): caches WebGL rendering into an `<img>`, free and reuse WebGL contexts. The library schedules the WebGL renderings to limit the maximum concurrent number of running WebGL contexts in order to display a lot of WebGL renderings on the same page.
 
-
 **without gl-react-dom-static-container:**
 
 ![2](https://cloud.githubusercontent.com/assets/211411/12009982/556bb112-ac92-11e5-93cb-748223c1955e.GIF)
@@ -23,7 +22,7 @@
 - `debounceShouldUpdate` *(number in ms)*: see `shouldUpdate` prop.
 - `timeout` *(number in ms)*: set the time to wait before
 
-## Usage Examples
+## Usage
 
 ```js
 var GLStaticContainer = require("gl-react-dom-static-container");
@@ -38,3 +37,9 @@ import GLStaticContainer from "gl-react-dom-static-container";
   </Surface>
 </GLStaticContainer>
 ```
+
+## Full Example
+
+[![](https://cloud.githubusercontent.com/assets/211411/12011455/a2c9b0cc-accd-11e5-83f9-23c253bc7d88.gif)](http://greweb.me/gl-react-dom-static-container/example/)
+
+**(see example/ folder)**
