@@ -10,6 +10,7 @@ varying vec2 uv;
 
 uniform vec3 color;
 uniform float over;
+uniform float toggle;
 
 void main(void)
 {
@@ -21,21 +22,22 @@ void main(void)
   float r = length(p);
 
   float h = abs(a);
-  float d = (13.0*h - 22.0*h*h + 10.0*h*h*h - 0.4 * over)/(6.0-5.0*h);
+  float d = (13.0*h - 22.0*h*h + 10.0*h*h*h - 0.2 * over)/(6.0-5.0*h);
 
   float f = step(r,d) * pow(1.0-r/d,0.25);
-  gl_FragColor = vec4(mix(vec3(1.0), color, f), 1.0);
+  gl_FragColor = vec4(mix(vec3(1.0), mix(color, color + 0.2, over) - 0.5 * toggle, f), 1.0);
 }
     `
   }
 });
 
 module.exports = GL.createComponent(
-  ({ color, over }) => <GL.Node shader={shaders.Heart} uniforms={{ color, over }} />,
+  ({ color, over, toggle }) => <GL.Node shader={shaders.Heart} uniforms={{ color, over, toggle: toggle ? 1 : 0 }} />,
   {
     displayName: "Heart",
     propTypes: {
       color: PropTypes.array.isRequired,
-      over: PropTypes.number.isRequired
+      over: PropTypes.number.isRequired,
+      toggle: PropTypes.bool.isRequired
     }
   });

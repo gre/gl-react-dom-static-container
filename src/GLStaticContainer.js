@@ -10,14 +10,6 @@ import {Surface} from "gl-react-dom";
 const pendings = [];
 let nbRenderings = 0;
 
-function add (list, item) {
-  list.push(item);
-}
-function remove (list, item) {
-  const i = list.indexOf(item);
-  if (i !== -1) list.splice(i, 1);
-}
-
 class GLStaticContainer extends Component {
   constructor (props) {
     super(props);
@@ -25,7 +17,8 @@ class GLStaticContainer extends Component {
       frame: null,
       frameId: 1,
       framePendingLoad: false,
-      shouldUpdate: false
+      shouldUpdate: false,
+      renderingId: 1
     };
     this._pending = false;
     this._rendering = false;
@@ -33,13 +26,14 @@ class GLStaticContainer extends Component {
 
   addPending () {
     if (!this._pending) {
-      add(pendings, this);
+      pendings.push(this);
       this._pending = true;
     }
   }
   removePending () {
     if (this._pending) {
-      remove(pendings, this);
+      const i = pendings.indexOf(this);
+      if (i !== -1) pendings.splice(i, 1);
       this._pending = false;
     }
   }
@@ -64,7 +58,7 @@ class GLStaticContainer extends Component {
   }
 
   componentWillMount () {
-    this.addPending();
+    this.addPending(true);
     this.pendingCheckLoad();
   }
 
@@ -75,11 +69,8 @@ class GLStaticContainer extends Component {
     if (this._shouldUpdateTimeout) clearTimeout(this._shouldUpdateTimeout);
   }
 
-  componentWillReceiveProps ({ shouldUpdate }) {
-    this.syncShouldUpdate(!!shouldUpdate);
-  }
-
-  componentWillUpdate (props, { shouldUpdate }) {
+  componentWillReceiveProps ({ shouldUpdate: propsShouldUpdate }) {
+    const shouldUpdate = this.syncShouldUpdate(!!propsShouldUpdate);
     if (!this.isRendering()) {
       if (shouldUpdate)
         this.addPending();
@@ -88,19 +79,36 @@ class GLStaticContainer extends Component {
     this.renderingCheckLoad();
   }
 
-  shouldComponentUpdate () {
-    return !this._frozen;
+  shouldComponentUpdate (nextProps, nextState) {
+    const state = this.state;
+    return !this._frozen && (
+      nextProps.shouldUpdate ||
+      nextState.frame !== state.frame ||
+      nextState.frameId !== state.frameId ||
+      nextState.framePendingLoad !== state.framePendingLoad ||
+      nextState.renderingId !== state.renderingId ||
+      nextState.shouldUpdate !== state.shouldUpdate
+    );
   }
 
   syncShouldUpdate (shouldUpdate) {
     const old = this.state.shouldUpdate;
     if (shouldUpdate !== old) {
-      if (this._shouldUpdateTimeout) clearTimeout(this._shouldUpdateTimeout);
-      if (shouldUpdate) this.setState({ shouldUpdate });
+      const {debounceShouldUpdate} = this.props;
+      if (this._shouldUpdateTimeout) {
+        clearTimeout(this._shouldUpdateTimeout);
+      }
+      if (shouldUpdate || debounceShouldUpdate<=0) {
+        this.setState({ shouldUpdate });
+        return shouldUpdate;
+      }
       else {
-        setTimeout(() => this.setState({ shouldUpdate }), this.props.debounceShouldUpdate);
+        this._shouldUpdateTimeout = setTimeout(
+          () => this.setState({ shouldUpdate }),
+          this.props.debounceShouldUpdate);
       }
     }
+    return old;
   }
 
   pendingCheckLoad = triggersReload => {
@@ -112,8 +120,11 @@ class GLStaticContainer extends Component {
         this._frozen = true;
         this._timeout = setTimeout(() => {
           this._frozen = false;
-          this.forceUpdate();
+          this.setState({ renderingId: this.state.renderingId + 1 });
         }, this.props.timeout);
+      }
+      else {
+        this.setState({ renderingId: this.state.renderingId + 1 });
       }
     }
   }
@@ -130,7 +141,6 @@ class GLStaticContainer extends Component {
               frameId: this.state.frameId + 1,
               framePendingLoad: true
             });
-            pendings.forEach(p => p.pendingCheckLoad(true));
           });
         }
       }
@@ -145,6 +155,7 @@ class GLStaticContainer extends Component {
   onFrameLoad = () => {
     this.removeRendering();
     this.setState({ framePendingLoad: false });
+    pendings.forEach(p => p.pendingCheckLoad(true));
   }
 
   render () {
@@ -214,9 +225,9 @@ class GLStaticContainer extends Component {
 
 GLStaticContainer.defaultProps = {
   shouldUpdate: false,
-  maximumConcurrent: 3,
+  maximumConcurrent: 8,
   timeout: 30,
-  debounceShouldUpdate: 200
+  debounceShouldUpdate: 100
 };
 
 GLStaticContainer.propTypes = {

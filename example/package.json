@@ -19,6 +19,7 @@
     "gl-react-dom": "^2.0.3",
     "gl-react-dom-static-container": "file:..",
     "react": "^0.14.3",
+    "react-addons-perf": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-motion": "^0.3.1"
   }
