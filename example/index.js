@@ -18,6 +18,9 @@ const genNorm = n => {
 const colorForColRow = (col, row) =>
   [ 1 - 0.5 * (Math.pow(row, 2) + Math.pow(col, 2)), row, col ];
 
+const imageForColRowIndexes = (i, j) =>
+  `https://unsplash.it/128/128/?random=${i}_${j}`;
+
 const styles = {
   app: {
     width: "100%",
@@ -25,6 +28,7 @@ const styles = {
     flexDirection: "column"
   },
   row: {
+    width: "100%",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -45,19 +49,29 @@ class InteractiveHeart extends React.Component {
   onMouseLeave = () => this.setState({ mouseOver: false })
   onClick = () => this.setState({ toggle: !this.state.toggle })
   render () {
-    const { width, height, color } = this.props;
+    const { width, height, color, image } = this.props;
     const { mouseOver, toggle } = this.state;
-    return <Motion defaultStyle={{ over: 0 }} style={{ over: spring(mouseOver ? 1 : 0, [150, 15]) }}>
-    { ({ over }) => <GLStaticContainer
+    return <Motion
+      defaultStyle={{ over: 0, toggle: toggle ? 1 : 0 }}
+      style={{
+        over: spring(mouseOver ? 1 : 0, [150, 15]),
+        toggle: spring(toggle ? 1 : 0, [150, 15]) }}>
+    { ({ over, toggle }) => <GLStaticContainer
         style={{ transform: "translateX(0)", cursor: "pointer" }}
-        maximumConcurrent={9}
-        timeout={100}
+        maximumConcurrent={12}
+        timeout={50}
+        debounceShouldUpdate={30}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         onClick={this.onClick}
         shouldUpdate={mouseOver || over !== 0}>
-        <Surface width={width} height={height} opaque={false}>
-          <Heart color={color} over={over} toggle={toggle} />
+        <Surface width={width} height={height} opaque={false} preload>
+          <Heart
+            color={color}
+            over={over}
+            toggle={toggle}
+            image={image}
+          />
         </Surface>
       </GLStaticContainer>
     }</Motion>;
@@ -66,10 +80,16 @@ class InteractiveHeart extends React.Component {
 
 class App extends React.Component {
   render () {
-    const width = 64, height = 64;
-    return <div style={styles.app}>{ genNorm(12).map(row =>
-      <div key={row} style={styles.row}>{ genNorm(16).map(col =>
-        <InteractiveHeart key={col} width={width} height={height} color={colorForColRow(col, row)} />)}
+    const width = 96, height = 96;
+    return <div style={styles.app}>{ genNorm(8).map((row, i) =>
+      <div key={row} style={styles.row}>{ genNorm(10).map((col, j) =>
+        <InteractiveHeart
+          key={col}
+          width={width}
+          height={height}
+          color={colorForColRow(col, row)}
+          image={imageForColRowIndexes(i, j)}
+        />)}
       </div>)}
     </div>;
   }

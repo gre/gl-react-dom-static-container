@@ -5,7 +5,7 @@ const {
   PropTypes,
   Children
 } = React;
-import {Surface} from "gl-react-dom";
+import {Surface, toBlobSupported} from "gl-react-dom";
 
 const pendings = [];
 let nbRenderings = 0;
@@ -24,9 +24,12 @@ class GLStaticContainer extends Component {
     this._rendering = false;
   }
 
-  addPending () {
+  addPending (init) {
     if (!this._pending) {
-      pendings.push(this);
+      if (init)
+        pendings.push(this);
+      else
+        pendings.unshift(this);
       this._pending = true;
     }
   }
@@ -67,6 +70,9 @@ class GLStaticContainer extends Component {
     this.removeRendering();
     if (this._timeout) clearTimeout(this._timeout);
     if (this._shouldUpdateTimeout) clearTimeout(this._shouldUpdateTimeout);
+    if (this.state.frame && toBlobSupported) {
+      URL.revokeObjectURL(this.state.frame);
+    }
   }
 
   componentWillReceiveProps ({ shouldUpdate: propsShouldUpdate }) {
@@ -130,11 +136,18 @@ class GLStaticContainer extends Component {
   }
 
   renderingCheckLoad = () => {
+    if (this._frozen) return;
     if (this._loaded && this._surface && this.isRendering()) {
       if (!this.state.shouldUpdate) {
         if (!this.state.framePendingLoad) {
           this._frozen = true;
-          this._surface.captureFrame().then(frame => {
+          this._surface
+          .captureFrame({ format: toBlobSupported ? "blob" : "base64" })
+          .then(toBlobSupported ?
+            frameBlob => URL.createObjectURL(frameBlob) :
+            frame => frame
+          )
+          .then(frame => {
             this._frozen = false;
             this.setState({
               frame,
@@ -145,8 +158,12 @@ class GLStaticContainer extends Component {
         }
       }
       else {
-        if (this.state.frame) {
-          this.setState({ frame: null });
+        const {frame} = this.state;
+        if (frame) {
+          if (frame && toBlobSupported) {
+            URL.revokeObjectURL(frame);
+          }
+          this.setState({ frame: null, frameBlob: null });
         }
       }
     }
@@ -208,6 +225,8 @@ class GLStaticContainer extends Component {
         },
         key: "canvas",
         ref: surface => {
+          if (surfaceProps.ref && typeof surfaceProps.ref === "function")
+            surfaceProps.ref(surface);
           this._surface = surface;
           if (surface) this.renderingCheckLoad();
         },
