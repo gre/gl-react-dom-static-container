@@ -20,7 +20,7 @@
 - `maximumConcurrent` *(number)*: limit the maximum concurrent `<Surface>` instance that can run across all StaticContainer's.
 - `shouldUpdate` *(bool)*: set to true to make the StaticContainer render the WebGL. If you keep the `shouldUpdate` value to true, the WebGL will continue to render the `<Surface>` (unless `maximumConcurrent` is reached). When `shouldUpdate` is set back to false, and after a `debounceShouldUpdate` duration, the Surface will be captured and cached in an image.
 - `debounceShouldUpdate` *(number in ms)*: see `shouldUpdate` prop.
-- `timeout` *(number in ms)*: set the time to wait before
+- `timeout` *(number in ms)*: set the time to wait before the first render happens.
 
 ## Usage
 
