@@ -8,6 +8,7 @@
     "build": "export NODE_ENV=production; browserify index.js -t [ babelify --presets es2015,stage-1,react ] | envify | uglifyjs -cm > bundle.js"
   },
   "devDependencies": {
+    "babel-cli": "^6.4.5",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-1": "^6.3.13",
@@ -17,8 +18,8 @@
     "uglify-js": "^2.6.1"
   },
   "dependencies": {
-    "gl-react": "^2.0.4",
-    "gl-react-dom": "^2.0.3",
+    "gl-react": "^2.1.0",
+    "gl-react-dom": "^2.1.0",
     "gl-react-dom-static-container": "file:..",
     "react": "^0.14.3",
     "react-addons-perf": "^0.14.3",

@@ -133,7 +133,7 @@ class GLStaticContainer extends Component {
         this.setState({ renderingId: this.state.renderingId + 1 });
       }
     }
-  }
+  };
 
   renderingCheckLoad = () => {
     if (this._frozen) return;
@@ -167,13 +167,13 @@ class GLStaticContainer extends Component {
         }
       }
     }
-  }
+  };
 
   onFrameLoad = () => {
     this.removeRendering();
     this.setState({ framePendingLoad: false });
     pendings.forEach(p => p.pendingCheckLoad(true));
-  }
+  };
 
   render () {
     const { frame, frameId, framePendingLoad } = this.state;

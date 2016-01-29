@@ -45,9 +45,9 @@ class InteractiveHeart extends React.Component {
       toggle: false
     };
   }
-  onMouseEnter = () => this.setState({ mouseOver: true })
-  onMouseLeave = () => this.setState({ mouseOver: false })
-  onClick = () => this.setState({ toggle: !this.state.toggle })
+  onMouseEnter = () => this.setState({ mouseOver: true });
+  onMouseLeave = () => this.setState({ mouseOver: false });
+  onClick = () => this.setState({ toggle: !this.state.toggle });
   render () {
     const { width, height, color, image } = this.props;
     const { mouseOver, toggle } = this.state;
