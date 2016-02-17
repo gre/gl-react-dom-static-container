@@ -1,4 +1,3 @@
-import _tmp_ from "gl-react/react";
 import React from "react";
 import {render} from "react-dom";
 import GLStaticContainer from "gl-react-dom-static-container";
@@ -65,7 +64,7 @@ class InteractiveHeart extends React.Component {
         onMouseLeave={this.onMouseLeave}
         onClick={this.onClick}
         shouldUpdate={mouseOver || over !== 0}>
-        <Surface width={width} height={height} opaque={false} preload>
+        <Surface width={width} height={height} backgroundColor="transparent" preload>
           <Heart
             color={color}
             over={over}

@@ -15,7 +15,7 @@
     "invariant": "2.2.0"
   },
   "peerDependencies": {
-    "gl-react-dom": ">= 2.0.3 <2.2.0"
+    "gl-react-dom": ">= 2.0.3 <2.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",

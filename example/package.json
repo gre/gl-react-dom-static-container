@@ -18,8 +18,8 @@
     "uglify-js": "^2.6.1"
   },
   "dependencies": {
-    "gl-react": "^2.1.0",
-    "gl-react-dom": "^2.1.0",
+    "gl-react": "^2.2.0",
+    "gl-react-dom": "^2.2.0",
     "gl-react-dom-static-container": "file:..",
     "react": "^0.14.3",
     "react-addons-perf": "^0.14.3",
