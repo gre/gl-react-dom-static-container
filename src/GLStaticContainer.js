@@ -182,7 +182,7 @@ class GLStaticContainer extends Component {
     invariant(children && children.type === Surface,
       "GLStaticContainer `children` props must be a Surface. Got: %s",
       children && children.type);
-    const { props: surfaceProps } = surface;
+    const { props: surfaceProps, ref: originalRef } = surface;
     const { width, height } = surfaceProps;
 
     const wrapperStyle = {
@@ -225,8 +225,8 @@ class GLStaticContainer extends Component {
         },
         key: "canvas",
         ref: surface => {
-          if (surfaceProps.ref && typeof surfaceProps.ref === "function")
-            surfaceProps.ref(surface);
+          if (typeof originalRef === "function")
+            originalRef(surface);
           this._surface = surface;
           if (surface) this.renderingCheckLoad();
         },
